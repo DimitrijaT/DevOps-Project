@@ -1,0 +1,33 @@
+version: "3"
+services:
+  #  Create a service named db.
+  db:
+    #   Use the Docker Image postgres. This will pull the newest release.
+    image: "postgres"
+    #   Give the container the name my_postgres. You can changes to something else.
+    container_name: "devops_course_db"
+    #   Setup the username, password, and database name. You can changes these values.
+    environment:
+      - POSTGRES_USER=kiii
+      - POSTGRES_PASSWORD=kiii2023
+      - POSTGRES_DB=course_db
+    #   Maps port 54320 (localhost) to port 5432 on the container. You can change the ports to fix your needs.
+    ports:
+      - "5432:5432"
+    #   Set a volume some that database is not lost after shutting down the container.
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  app:
+    image: dimitrijatimeski/devops-project:latest
+    container_name: "devops_app"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/course_db
+      - SPRING_DATASOURCE_USERNAME=kiii
+      - SPRING_DATASOURCE_PASSWORD=kiii2023
