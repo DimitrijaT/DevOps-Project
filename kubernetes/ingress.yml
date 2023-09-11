@@ -5,20 +5,14 @@ metadata:
   name: devops-project-ingress
   namespace: devops-project-namespace
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+#    nginx.ingress.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
   rules:
-    #    - host: devops.com
-    - http:
+    - host: localhost
+      http:
         paths:
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: devops-project-service
-                port:
-                  number: 8080
           - path: /
             pathType: Prefix
             backend:
@@ -26,10 +20,18 @@ spec:
                 name: devops-project-service
                 port:
                   number: 8080
-          - path: /about
-            pathType: Prefix
-            backend:
-              service:
-                name: devops-project-service
-                port:
-                  number: 8080
+
+
+# NAME                    TYPE           CLUSTER-IP   EXTERNAL-IP   PORT(S)                      AGE
+#ingress-nginx-controller LoadBalancer   10.105.3.47  localhost     80:30166/TCP,443:30975/TCP   55m
+
+#    - host: devops-project.com
+#      http:
+#        paths:
+#          - path: /
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: devops-project-service
+#                port:
+#                  number: 8080

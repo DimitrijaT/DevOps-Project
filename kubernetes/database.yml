@@ -102,9 +102,17 @@ metadata:
   name: devops-project-database-service
   namespace: devops-project-namespace
 spec:
-  clusterIP: None
+#  clusterIP: None
   selector:
     app: devops-project-database
   ports:
     - port: 5432
+      targetPort: 5432
       protocol: TCP
+  type: LoadBalancer # This means that the service will be exposed outside of the cluster
+
+
+# Types of Services:
+# ClusterIP: Exposes only within the cluster
+# NodePort: Exposes the service on each Node’s IP at a static port (the NodePort).
+# LoadBalancer: Exposes the service externally
