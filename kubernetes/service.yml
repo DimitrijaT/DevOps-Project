@@ -1,0 +1,15 @@
+# Service is an abstraction which defines a logical set of Pods and a policy by which to access them
+# Sometimes this pattern is called a microservice.
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-project-service
+  namespace: devops-project-namespace
+spec:
+  selector:
+    app: devops-project-app
+  ports:
+    - port: 8080 # The port that will be exposed by this service.
+      protocol: TCP
+      targetPort: 8080
+

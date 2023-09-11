@@ -1,0 +1,35 @@
+# Ingress allows external users and outside client applications access to HTTP services.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: devops-project-ingress
+  namespace: devops-project-namespace
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    #    - host: devops.com
+    - http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: devops-project-service
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: devops-project-service
+                port:
+                  number: 8080
+          - path: /about
+            pathType: Prefix
+            backend:
+              service:
+                name: devops-project-service
+                port:
+                  number: 8080

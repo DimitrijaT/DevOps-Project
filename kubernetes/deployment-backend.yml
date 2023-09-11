@@ -1,0 +1,70 @@
+# ConfigMap for application configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: devops-project-app-config
+  namespace: devops-project-namespace
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://spring.datasource.url:5432/course_db'
+  SPRING_DATASOURCE_USERNAME: 'kiii'
+
+---
+
+# Secrets for sensitive data like database password
+apiVersion: v1
+kind: Secret
+metadata:
+  name: devops-project-app-secrets
+  namespace: devops-project-namespace
+type: Opaque
+data:
+  SPRING_DATASOURCE_PASSWORD: a2lpaTIwMjM= # base64 encoded password
+
+---
+
+# Deployment for the backend application
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-project-app-deployment
+  namespace: devops-project-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devops-project-app # Only pods with this label will be selected
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template: # Below is the Pod
+    metadata:
+      labels:
+        app: devops-project-app
+    spec: # Below is the Container
+      containers:
+        - name: devops-project-container
+          image: dimitrijatimeski/devops-project:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: devops-project-app-config
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: devops-project-app-config
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: devops-project-app-secrets
+                  key: SPRING_DATASOURCE_PASSWORD
+      restartPolicy: Always
+

@@ -1,0 +1,7 @@
+# Namespace is a logical isolation of cluster resources.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: devops-project-namespace
+  labels:
+    name: devops-project-namespace

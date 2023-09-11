@@ -1,0 +1,110 @@
+# ConfigMap for application configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: devops-project-database-config
+  namespace: devops-project-namespace
+data:
+  POSTGRES_DB: 'course_db'
+  POSTGRES_USER: 'kiii'
+
+
+---
+
+
+# Secret for database credentials
+apiVersion: v1
+kind: Secret
+metadata:
+  name: devops-project-database-secrets
+  namespace: devops-project-namespace
+type: Opaque
+data:
+  POSTGRES_PASSWORD: a2lpaTIwMjM=
+
+
+---
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: devops-project-database-pvc
+  namespace: devops-project-namespace
+  labels:
+    app: devops-project-database
+spec:
+#  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+
+---
+
+
+# StatefulSet is the workload API object used to manage stateful applications.
+# Postgres StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: devops-project-database-statefulset
+  namespace: devops-project-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devops-project-database
+  serviceName: devops-project-database-service
+  template:
+    metadata:
+      labels:
+        app: devops-project-database
+        namespace: devops-project-namespace
+    spec:
+      containers:
+        - name: devops-project-database-container
+          image: postgres:latest
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: devops-project-database-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: devops-project-database-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: devops-project-database-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: devops-project-database-volume
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: devops-project-database-volume
+          persistentVolumeClaim:
+            claimName: devops-project-database-pvc
+
+
+---
+
+
+# Service for the Postgres StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-project-database-service
+  namespace: devops-project-namespace
+spec:
+  clusterIP: None
+  selector:
+    app: devops-project-database
+  ports:
+    - port: 5432
+      protocol: TCP
