@@ -34,7 +34,7 @@ metadata:
   labels:
     app: devops-project-database
 spec:
-#  storageClassName: local-path
+  #  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
@@ -102,7 +102,7 @@ metadata:
   name: devops-project-database-service
   namespace: devops-project-namespace
 spec:
-#  clusterIP: None
+  #  clusterIP: None
   selector:
     app: devops-project-database
   ports:
@@ -113,6 +113,7 @@ spec:
 
 
 # Types of Services:
-# ClusterIP: Exposes only within the cluster
+# ClusterIP: Exposes only within the cluster (Default)
 # NodePort: Exposes the service on each Node’s IP at a static port (the NodePort).
 # LoadBalancer: Exposes the service externally
+

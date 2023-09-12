@@ -68,3 +68,4 @@ spec:
                   key: SPRING_DATASOURCE_PASSWORD
       restartPolicy: Always
 
+
