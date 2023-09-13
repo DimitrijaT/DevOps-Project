@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1 # This will change when they update ArgoCD
+kind: Application
+metadata:
+  name: devops-project-argo-application
+  namespace: argocd
+spec:
+  project: default
+
+
+  # For the git repo ArgoCD will connect to
+  # ArgoCd does this every 3 minutes by default
+  source:
+    repoURL: https://github.com/DimitrijaT/devops-project.git
+    targetRevision: HEAD
+    path:  kubernetes # Whether do we sync the whole repo or just a subdirectory
+    # If path is empty, ArgoCD will sync the whole repo
+
+
+  # For the cluster ArgoCD will deploy to
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: devops-project-namespace # Which namespace ArgoCD will deploy to
+
+
+  # SyncPolicy is how ArgoCD will sync the repo to the cluster
+  # They are off by default for safety reasons
+  syncPolicy:
+    syncOptions:
+      - CreateNameSpace=true # Whether ArgoCD will create the namespace if it doesn't exist
+    automated: # When you change and push to the repo, ArgoCD will automatically sync the changes
+      prune: true # Whether ArgoCD will delete resources that are not in the repo
+      selfHeal: true # Whether ArgoCD will recreate resources that are not in the repo
+#      allowEmpty: true # Whether ArgoCD will allow empty manifests
+
+  # Ingress Stuck in Progressing Fix
+
+  
+  
+
+
+# kubectl apply -f argocd.yaml
